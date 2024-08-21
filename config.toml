@@ -1,0 +1,32 @@
+[tg]
+token = "7035885326:AAEAfxT6BTzmmw0WLwxaTqxroKf9WriTtn0"
+admin_id = 1835906223
+support_username = "solodieyo88point41percent"
+locales_path = 'C:\Users\SOLO\2to3\anon2\app\translations\{locale}'
+premium_day = true
+premium_week = true
+premium_month = true
+premium_forever = true
+
+
+[webhook]
+web_server_host = "127.0.0.1"
+web_server_port = 8080
+webhook_path = "/webhook"
+webhook_secret = "my-xzczxczxczxcasdas"
+base_webhook_url = "https://winning-set-hound.ngrok-free.app"
+
+[postgres]
+database = "anontg"
+user = "pugach"
+password = "qweqwe"
+host = "127.0.0.1"
+port = 5432
+
+[redis]
+host = "127.0.0.1"
+port = 6379
+
+[crypto]
+token = "15424:AAVO5vPMX3iDEmjACVfvsNm0o6TJSzx017P"
+webhook_path = "/testzxczxc"
