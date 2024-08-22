@@ -142,8 +142,12 @@ async def reply_anon_message(
 			)
 		)
 
-		await dialog_manager.start(
-			state=SendAnonMessagesStates.success_send,
-			data={"to_user_id": to_user.user_id},
-			show_mode=ShowMode.DELETE_AND_SEND
-		)
+	await dialog_manager.start(
+		state=SendAnonMessagesStates.success_send,
+		data={"to_user_id": to_user.user_id},
+		show_mode=ShowMode.DELETE_AND_SEND
+	)
+
+
+async def ignore(_, __, dialog_manager: DialogManager):
+	dialog_manager.show_mode = ShowMode.NO_UPDATE

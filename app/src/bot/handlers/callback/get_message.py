@@ -74,8 +74,8 @@ async def on_click_answer_blocked(
             text=i18n.get('answer-message-button'),
             callback_data=ReceivedCallbackData(
                 message_id=callback_data.message_id,
-                from_user_id=from_user.id,
-                to_user_id=user.id
+                from_user_id=from_user.user_id,
+                to_user_id=user.user_id
             ).pack()
         )],
     ]

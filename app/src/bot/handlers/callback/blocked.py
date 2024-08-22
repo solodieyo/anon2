@@ -1,4 +1,4 @@
-from aiogram import Router
+from aiogram import Router, Bot
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram_dialog import DialogManager, StartMode, ShowMode
 from aiogram_i18n import I18nContext
@@ -21,7 +21,8 @@ async def unblock_user(
 	repository: FromDishka[GeneralRepository],
 	dialog_manager: DialogManager,
 	user: User,
-	i18n: I18nContext
+	i18n: I18nContext,
+	bot: Bot
 ):
 	await repository.blocked.unblock_user(
 		user_id=callback_data.user_id,
@@ -30,6 +31,7 @@ async def unblock_user(
 
 	if callback_data.block_list:
 		await callback.message.delete()
+		await bot.delete_message(chat_id=callback.from_user.id, message_id=dialog_manager.dialog_data['message_id'])
 		await dialog_manager.start(
 			state=ProfileStates.ban_list,
 			mode=StartMode.RESET_STACK,

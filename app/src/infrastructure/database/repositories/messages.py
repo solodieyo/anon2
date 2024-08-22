@@ -2,12 +2,10 @@ from datetime import date
 from typing import Optional
 
 from aiogram.enums import ContentType
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, update
 from sqlalchemy.sql.functions import func
 
-from app.src.infrastructure.database.models import User
-from app.src.infrastructure.database.models.media import Media
-from app.src.infrastructure.database.models.messages import Message
+from app.src.infrastructure.database.models import User, Message, Media
 from app.src.infrastructure.database.models_dto.message_dto import MessageDTO
 from app.src.infrastructure.database.repositories.base import BaseRepository
 
@@ -23,7 +21,6 @@ class MessagesRepository(BaseRepository):
 		media_id: Optional[str],
 		media_name: Optional[str]
 	) -> Message:
-
 		new_message = Message(
 			from_user_id=from_user_id,
 			to_user_id=to_user_id,
@@ -38,6 +35,17 @@ class MessagesRepository(BaseRepository):
 			self.session.add(media)
 			await self.session.flush()
 			new_message.media_id = media.id
+
+		await self.session.execute(
+			update(User).where(User.id == to_user_id).values(
+				count_received_message=User.count_received_message + 1
+			)
+		)
+		await self.session.execute(
+			update(User).where(User.id == from_user_id).values(
+				count_send_message=User.count_send_message + 1
+			)
+		)
 
 		self.session.add(new_message)
 		await self.session.commit()
@@ -63,11 +71,11 @@ class MessagesRepository(BaseRepository):
 		)
 
 	async def get_received_messages_count(self, user_id: int):
-		result = await self.session.scalar(select(func.count(Message.id)).where(Message.to_user_id == user_id))
+		result = await self.session.scalar(select(User.count_received_message).where(User.id == user_id))
 		return result
 
 	async def get_sent_messages_count(self, user_id: int):
-		result = await self.session.scalar(select(func.count(Message.id)).where(Message.from_user_id == user_id))
+		result = await self.session.scalar(select(User.count_send_message).where(User.id == user_id))
 		return result
 
 	async def get_received_messages_count_today(self, user_id: int):

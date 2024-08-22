@@ -26,3 +26,5 @@ class User(Base, TimestampMixin):
 	referral_user_id: Mapped[Optional[Int64]]
 	last_activity: Mapped[datetime] = mapped_column(nullable=True)
 	show_premium_username: Mapped[bool] = mapped_column(default=True)
+	count_send_message: Mapped[int] = mapped_column(default=0)
+	count_received_message: Mapped[int] = mapped_column(default=0)

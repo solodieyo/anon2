@@ -39,9 +39,13 @@ async def main() -> None:
         dp.startup.register(on_startup_mail)
         dp.startup.register(on_i18n_startup)
         dp.error.register(error_handler, ExceptionTypeFilter(UnknownIntent))
+        tasks = await redis_source.get_schedules()
+        for task in tasks:
+            if task.task_name == 'dishka.integrations.base:admin_day_stats':
+                await redis_source.delete_schedule(task.schedule_id)
         await admin_day_stats.schedule_by_cron(
-        	redis_source,
-        	'1 15 * * *',
+            redis_source,
+            '1 15 * * *',
         )
         await bot.delete_webhook(drop_pending_updates=True)
         await dp.start_polling(bot)

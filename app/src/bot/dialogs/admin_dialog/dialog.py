@@ -2,6 +2,7 @@ from operator import itemgetter
 
 from aiogram import F
 from aiogram_dialog import Window, Dialog, StartMode
+from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import (
 	SwitchTo,
 	Row,
@@ -22,6 +23,7 @@ from app.src.bot.dialogs.admin_dialog.getters import (
 	getter_main_admin_text,
 	getter_messages, getter_message_content
 )
+from app.src.bot.dialogs.common.common_handlers import ignore
 from app.src.bot.dialogs.common.widgets import ADMIN_MENU_BUTTON, I18NFormat
 from app.src.bot.states.dialog_states import (
 	AdminStates,

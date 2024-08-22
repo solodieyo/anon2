@@ -71,6 +71,7 @@ async def on_select_banned(
 	blocked: BlockedDTO = await repository.blocked.get_blocked_message(
 		blocked_id=int(selected_item),
 	)
+	dialog_manager.dialog_data['message_id'] = callback.message.message_id
 
 	keyboard = InlineKeyboardMarkup(
 		inline_keyboard=[
@@ -194,4 +195,3 @@ async def change_show_status(
 			text=i18n.get('show-premium-username-callback-on'),
 			show_alert=True
 		)
-

@@ -21,15 +21,15 @@ from app.src.infrastructure.database.models_dto.rating_dto import RatingDTO
 from app.src.infrastructure.database.repositories import GeneralRepository
 
 PLACES = {
-	1: "🥇",
-	2: "🥈",
-	3: "🥉",
-	5: '🏆',
-	6: '🏆',
-	7: '🏆',
-	8: '🏆',
-	9: '🏆',
-	10: '🏆'
+    1: "🥇",
+    2: "🥈",
+    3: "🥉",
+    5: '🏆',
+    6: '🏆',
+    7: '🏆',
+    8: '🏆',
+    9: '🏆',
+    10: '🏆'
 }
 
 
@@ -118,15 +118,17 @@ async def getter_top_type(
         "from_user_count": top_info.from_user_count
     }
     for i, user_data in zip_longest(range(1, 11), top_info.users, fillvalue='no'):
+        user_data = user_data[0]
         if isinstance(user_data, str):
             username = "no"
-        elif user_data[8]:
-            username = html.quote(user_data[2])
+        elif user_data.show_in_tops:
+            username = html.quote(user_data.full_name)
         else:
             username = i18n.get('hidden-username')
 
         data[f"username{i}"] = username
-        data[f"username{i}_count"] = user_data[-2]
+        data[f"username{i}_count"] = user_data.count_send_message\
+            if type_top == "senders" else user_data.count_received_message
 
     return data
 
