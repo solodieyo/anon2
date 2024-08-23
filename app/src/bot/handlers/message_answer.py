@@ -37,3 +37,5 @@ async def input_message(
 		repository=repository,
 		dialog_manager=dialog_manager
 	)
+
+	await state.clear()

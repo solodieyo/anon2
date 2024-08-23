@@ -4,6 +4,7 @@ from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import SwitchTo, Start
 from aiogram_dialog.widgets.text import Format
 
+from app.src.bot.dialogs.common.common_handlers import ignore
 from app.src.bot.dialogs.send_message_dialog.getters import start_hello_message
 from app.src.bot.dialogs.send_message_dialog.handlers import (
 	on_input_anon_message
@@ -44,6 +45,7 @@ success_sent = Window(
 		id='send_again_message',
 		state=SendAnonMessagesStates.input_anon_msg
 	),
+	MessageInput(func=ignore),
 	MAIN_MENU_BUTTON,
 	state=SendAnonMessagesStates.success_send
 )
