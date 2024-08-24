@@ -180,7 +180,6 @@ async def getter_invoice_stars_text(
         payload=f"{price}_stars",
         currency="XTR"
     )
-
     return {
         "payment_id": payment_id,
         "link": invoice_link,
@@ -202,9 +201,10 @@ async def getter_invoice_crypto_text(
 ):
     start_time_payment = int(time.time())
 
-    await redis.set(
+    await redis.setex(
         name=f"payment:start_time:{user.user_id}",
-        value=start_time_payment
+        value=start_time_payment,
+        time=86400
     )
 
     payment_type = await redis.get(f"payment:payment_type:{user.user_id}")
@@ -214,16 +214,23 @@ async def getter_invoice_crypto_text(
         payment_type=PaymentType.CRYPTO_BOT,
         amount=price * 100
     )
-    await redis.set(
-        name=f"payment:payment_id:{user.user_id}",
-        value=payment_id
+    await redis.setex(
+        name=f"payment:user_id:{payment_id}",
+        value=user.user_id,
+        time=86400
+    )
+    await redis.setex(
+        name=f"payment:payment_type:{payment_id}",
+        value=payment_type,
+        time=86400
     )
     invoice = await crypto.create_invoice(
         currency_type='fiat',
         fiat='RUB',
         accepted_assets=['BTC', 'USDT', 'TRX'],
         amount=price,
-        payload=str(user.user_id),
+        payload=str(payment_id),
+        expires_in=86400
     )
 
     dialog_manager.dialog_data['invoice_id'] = invoice.invoice_id

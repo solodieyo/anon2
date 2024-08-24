@@ -3,7 +3,7 @@ import asyncio
 from aiogram import Bot
 from aiogram.types import Message, CallbackQuery, Chat
 from aiogram_album import AlbumMessage
-from aiogram_dialog import DialogManager
+from aiogram_dialog import DialogManager, ShowMode, StartMode
 from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import Button
 from aiogram_i18n import I18nContext
@@ -16,7 +16,7 @@ from app.src.bot.dialogs.common.widgets import DELETE_KEYBOARD
 from app.src.bot.senders import send_message, NewMessage
 from app.src.bot.senders.mailing.new_mailing import create_new_mailing
 from app.src.bot.senders.mailing.start_mailing import INPUT_MEDIA_TYPES
-from app.src.bot.states.dialog_states import BroadcastStates
+from app.src.bot.states.dialog_states import BroadcastStates, AdminStates
 from app.src.enums import MailingType
 from app.src.infrastructure.database.models import Mailing
 from app.src.infrastructure.database.repositories import GeneralRepository
@@ -88,7 +88,7 @@ async def start_broadcast(
         i18n=i18n
     )
 
-    await dialog_manager.start(state=BroadcastStates.main_menu)
+    await dialog_manager.switch_to(state=BroadcastStates.main_menu)
 
 
 @inject
@@ -99,9 +99,11 @@ async def cancel_mailing(
         redis: FromDishka[Redis]
 ):
     await redis.set(name='mailing:cancel', value='y')
-    await asyncio.sleep(0.3)
-    dialog_manager.dialog_data['active_mailing'] = False
-    await dialog_manager.switch_to(state=BroadcastStates.main_menu)
+    await dialog_manager.start(
+        state=AdminStates.main_menu,
+        show_mode=ShowMode.DELETE_AND_SEND,
+        mode=StartMode.RESET_STACK
+    )
 
 
 @inject
@@ -117,10 +119,7 @@ async def show_mailing_content(
     await _show_mailing_content(
         _,
         __,
-        dialog_manager=dialog_manager,
-        bot=bot,
         mailing_content=mailing_content,
-        i18n=i18n
     )
 
 
@@ -130,19 +129,15 @@ async def show_previous_mailing(
         __,
         dialog_manager: DialogManager,
         selected_item: str,
-        repository: FromDishka[GeneralRepository],
-        bot: FromDishka[Bot]
 ):
     dialog_manager.dialog_data['mailing_id'] = int(selected_item)
     await dialog_manager.switch_to(BroadcastStates.show_previus_mailing_content)
 
 
 async def _show_mailing_content(
-        callback: CallbackQuery,
         dialog_manager: DialogManager,
         bot: Bot,
         mailing_content: Mailing,
-        i18n: I18nContext
 ):
     if len(mailing_content.media) > 1 and mailing_content.media[0] is not None:
         medias = [INPUT_MEDIA_TYPES[content_type](media=file_id) for file_id, content_type in
@@ -179,10 +174,8 @@ async def show_previous_mailing_content(
     mailing_id = dialog_manager.dialog_data['mailing_id']
     mailing_content: Mailing = await repository.mailing.get_mailing_by_id(mailing_id=mailing_id)
     await _show_mailing_content(
-        callback=callback,
         dialog_manager=dialog_manager,
         bot=bot,
         mailing_content=mailing_content,
-        i18n=i18n
     )
 

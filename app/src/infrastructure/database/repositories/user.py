@@ -4,6 +4,7 @@ from aiogram_i18n import I18nMiddleware
 from sqlalchemy import select, update
 
 from app.src.enums import Roles
+from app.src.infrastructure.database.models import Message
 from app.src.infrastructure.database.models.user import User
 from app.src.infrastructure.database.repositories.base import BaseRepository
 
@@ -78,6 +79,13 @@ class UserRepository(BaseRepository):
 		result: int | None = await self.session.scalar(
 			select(User.user_id).where(User.custom_username == custom_username))
 		return result
+
+	async def get_user_by_msg_id(self, message_id: int):
+		result_user_id: int = await self.session.scalar(
+			select(Message.from_user_id).where(Message.tg_message_id == message_id)
+		)
+		result_user = await self.get_user_by_id(result_user_id)
+		return result_user
 
 	async def get_user_start(self, user_data: str):
 		if user_data[0].isalpha():

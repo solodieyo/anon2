@@ -48,7 +48,8 @@ async def create_new_mailing(
             mail_text=text,
             file_ids=file_ids,
             content_type_media=content_type_media,
-            faker=faker
+            faker=faker,
+            i18n=i18n
         ).start_mailing()
     )
 

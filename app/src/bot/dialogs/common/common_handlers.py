@@ -77,7 +77,7 @@ async def reply_anon_message(
 			message=message.text or message.caption,
 			content_type=message.content_type,
 			media_id=media_id,
-			media_name=media_name
+			media_name=media_name,
 		)
 
 		keyboard = InlineKeyboardMarkup(
@@ -131,7 +131,7 @@ async def reply_anon_message(
 				)], )
 
 		chat = await bot.get_chat(chat_id=to_user.user_id)
-		await send_message(
+		sent_message: Message = await send_message(
 			bot=bot,
 			new_message=NewMessage(
 				chat=chat,
@@ -141,7 +141,10 @@ async def reply_anon_message(
 				media=media_id
 			)
 		)
-
+		await repository.messages.add_message_id(
+			message_id=user_message.id,
+			tg_message_id=sent_message.message_id
+		)
 	await dialog_manager.start(
 		state=SendAnonMessagesStates.success_send,
 		data={"to_user_id": to_user.user_id},

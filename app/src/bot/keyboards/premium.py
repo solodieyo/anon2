@@ -40,13 +40,13 @@ def get_premium_keyboard(
 	if config.tg.premium_month:
 		kb.button(
 			text=i18n.get('month-premium-button', month_price=prices.price_month),
-			callback_data='premium_price_forever'
+			callback_data='premium_price_month'
 		)
 
 	if config.tg.premium_forever:
 		kb.button(
 			text=i18n.get('forever-premium-button', forever_price=prices.price_forever),
-			callback_data='premium_forever'
+			callback_data='premium_price_forever'
 		)
 	kb.adjust(1)
 	return kb.as_markup()

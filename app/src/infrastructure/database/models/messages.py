@@ -14,3 +14,4 @@ class Message(Base, TimestampMixin):
 	from_user_id: Mapped[Int64] = mapped_column(ForeignKey('users.id'))
 	to_user_id: Mapped[Int64] = mapped_column(ForeignKey('users.id'))
 	media_id: Mapped[Optional[Int16]] = mapped_column(ForeignKey('media.id'))
+	tg_message_id: Mapped[Int64] = mapped_column(server_default="0")

@@ -5,6 +5,7 @@ from dishka import FromDishka
 from dishka.integrations.aiogram_dialog import inject
 from redis.asyncio import Redis
 
+from app.src.enums import MailingStatus
 from app.src.infrastructure.database.models import Mailing
 from app.src.infrastructure.database.repositories import GeneralRepository
 
@@ -18,14 +19,13 @@ async def getter_mailing_info(
 	**_
 ):
 	active_mailing: Mailing = await repository.mailing.get_active_mailing()
-
 	if not active_mailing:
 		return {
 			'active_mailing': False
 		}
 
-	success_sent = await redis.get('mailing:success_sent')
-	failed_sent = await redis.get('mailing:failed_sent')
+	success_sent = await redis.get('mailing:success_sent') or 0
+	failed_sent = await redis.get('mailing:failed_sent') or 0
 
 	return {
 		'active_mailing': dialog_manager.dialog_data.get('active_mailing', True),

@@ -19,12 +19,13 @@ class MessagesRepository(BaseRepository):
 		message: str,
 		content_type: Optional[ContentType],
 		media_id: Optional[str],
-		media_name: Optional[str]
+		media_name: Optional[str],
 	) -> Message:
 		new_message = Message(
 			from_user_id=from_user_id,
 			to_user_id=to_user_id,
 			message=message,
+			tg_message_id=0
 		)
 		if media_id:
 			media = Media(
@@ -50,6 +51,13 @@ class MessagesRepository(BaseRepository):
 		self.session.add(new_message)
 		await self.session.commit()
 		return new_message
+
+	async def add_message_id(self, tg_message_id, message_id: int):
+		await self.session.execute(update(Message).where(Message.id == message_id).values(
+			tg_message_id=tg_message_id
+		))
+		await self.session.commit()
+
 
 	async def get_message(self, message_id: int) -> MessageDTO:
 		print(message_id, type(message_id))

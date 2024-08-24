@@ -74,6 +74,7 @@ async def premium_date_handler(
 		ProfileStates.choice_pay,
 		mode=StartMode.RESET_STACK,
 		show_mode=ShowMode.EDIT,
+		data={'command': True}
 	)
 
 

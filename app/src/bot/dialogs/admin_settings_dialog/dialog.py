@@ -103,6 +103,11 @@ change_price = Window(
 		id='premium_price_month',
 		on_click=on_select_price
 	),
+	Button(
+		text=Format("НАВСЕГДА - {prices.price_forever}"),
+		id='premium_price_forever',
+		on_click=on_select_price
+	),
 	SETTINGS_MENU_BUTTON,
 	state=AdminSettingsStates.select_price,
 	getter=getter_prices

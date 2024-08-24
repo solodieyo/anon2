@@ -59,6 +59,7 @@ class Broadcast:
         self.i18n = i18n
 
     async def start_mailing(self):
+        await self.redis.set('mailing:active_mailing', 'y')
         await self._get_users()
         if len(self.file_ids) > 1:
             await self._start_album_mailing()
@@ -78,8 +79,9 @@ class Broadcast:
         for user_id in self.users_ids:
             user_id = user_id[0]
             cancel = await self.redis.get('mailing:cancel')
-            if cancel:
-                break
+            if cancel == 'y':
+                await self._end_mailing(status=MailingStatus.FAILED)
+                return
             try:
                 await self.bot.send_media_group(
                     chat_id=user_id,
@@ -116,7 +118,7 @@ class Broadcast:
             cancel = await self.redis.get('mailing:cancel')
             if cancel == 'y':
                 await self._end_mailing(status=MailingStatus.FAILED)
-                break
+                return
             chat = await self.bot.get_chat(user_id)
             try:
                 await send_message(
@@ -161,6 +163,7 @@ class Broadcast:
                 int(failed_sent),
                 status
             )
+
         await self.redis.delete('mailing:cancel')
         await self.redis.delete('mailing:last_user_id')
         await self.redis.delete('mailing:success_sent')
